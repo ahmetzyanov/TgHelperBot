@@ -16,7 +16,6 @@ from CallbackData import CallbackData
 
 from aiogram.fsm.state import State, StatesGroup
 
-
 class Form(StatesGroup):
     add_rec = State()
 
