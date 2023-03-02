@@ -115,7 +115,7 @@ async def record_callback(callback: CallbackQuery) -> None:
     await callback.answer()
 
 
-@dp.message(Form.add_rec)
+@form_router.message(Form.add_rec)
 async def add_record(message: Message, state: FSMContext) -> None:
     print('debug')
     await state.clear()
@@ -147,6 +147,7 @@ async def menu_callback(callback: CallbackQuery) -> None:
 
 def main() -> None:
     dp.run_polling(bot)
+    dp.include_router(form_router)
 
 
 if __name__ == "__main__":
