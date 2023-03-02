@@ -1,0 +1,7 @@
+gitignore
+.*
+*.xml
+.idea
+*.iml
+test*
+bfg.jar

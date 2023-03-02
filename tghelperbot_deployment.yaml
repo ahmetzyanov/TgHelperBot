@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tghelperbot-depl
+  labels:
+    app: tghelperbot
+  namespace: jenkins
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: tghelperbot
+  template:
+    metadata:
+      labels:
+        app: tghelperbot
+    spec:
+      containers:
+      - name: tghelperbot
+        image: "registry.gitlab.com/ahmetzyanov/tghelperbot:BUILD_ID"
+      imagePullSecrets:
+      - name: gitlab-cred
