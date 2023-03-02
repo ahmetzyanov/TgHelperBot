@@ -89,8 +89,8 @@ async def zones_callback(callback: CallbackQuery, state: FSMContext) -> None:
         await callback.answer(text=f'Record successfully deleted!', show_alert=True)
     elif action == 'add':
         await state.set_state(Form.add_rec)
-        await callback.message.answer(text="Enter record you'd like to add")
-        raise CancelledError
+        await callback.message.edit_text(text="Enter record you'd like to add", reply_markup=Buttons.add_rec(zone_id))
+        await asyncio.sleep(10)
 
     parsed_output = await get_records(cf=cf, zone_id=zone_id, zone=True)
 
@@ -106,7 +106,6 @@ async def record_callback(callback: CallbackQuery) -> None:
     zone_id = data['zone_id']
 
     parsed_output = await get_records(cf=cf, zone_id=zone_id, record_id=record_id, zone=False)
-    print(parsed_output)
 
     # Delete confirmation proceeding
     if data['action'] == 'confirm':
@@ -121,9 +120,9 @@ async def record_callback(callback: CallbackQuery) -> None:
 
 @form_router.message(Form.add_rec)
 async def add_record(message: Message, state: FSMContext) -> None:
-    print('debug')
     await state.clear()
-    await message.answer(f'Record "{message.text}" successfully added!')
+    await message.edit_text(f'Record "{message.text}" successfully added!')
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 '''
