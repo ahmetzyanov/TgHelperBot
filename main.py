@@ -115,7 +115,7 @@ async def record_callback(callback: CallbackQuery) -> None:
     await callback.answer()
 
 
-@form_router.message(Form.add_rec)
+@dp.message(Form.add_rec)
 async def add_record(message: Message, state: FSMContext) -> None:
     print('debug')
     await state.clear()
