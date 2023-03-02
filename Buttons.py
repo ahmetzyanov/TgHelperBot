@@ -50,8 +50,9 @@ class Buttons:
     def add_rec(zone_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         back_callback_data = cb(prefix='zone', zone_id=zone_id)
-        builder.button(InlineKeyboardButton(text='Back', callback_data=back_callback_data()))
+        builder.button(text='Cancel', callback_data=back_callback_data())
         return builder.as_markup()
+
 
     @staticmethod
     def confirmation(zone_id, record_id) -> InlineKeyboardMarkup:
