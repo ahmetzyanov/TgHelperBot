@@ -1,6 +1,7 @@
 import CloudFlare
 import logging
 from logging import INFO
+import asyncio
 
 from aiogram import Bot, Dispatcher, Router
 from aiogram.filters import Text, Command
@@ -31,6 +32,8 @@ bot = Bot(token=TG_API_TOKEN, parse_mode="HTML")
 dp = Dispatcher()
 
 form_router = Router()
+dp.include_router(form_router)
+
 '''
     Commands
 '''
@@ -145,10 +148,9 @@ async def menu_callback(callback: CallbackQuery) -> None:
 '''
 
 
-def main() -> None:
-    dp.run_polling(bot)
-    dp.include_router(form_router)
+async def main() -> None:
+    await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
