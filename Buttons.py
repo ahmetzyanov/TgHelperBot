@@ -32,8 +32,9 @@ class Buttons:
         builder = InlineKeyboardBuilder()
         print('start list zones')
         for zone in zones:
-            callback_data = ListRecords(zone_id=zone['id']).pack()
-            print(callback_data)
+            callback_data = ListRecords(zone_id=zone['id'])
+            print(callback_data.pack() + 'pack')
+            print(type(callback_data.pack()))
             builder.button(text=zone['name'],
                            callback_data=callback_data)
         builder.row(InlineKeyboardButton(text='Main Menu', callback_data="menu"))
