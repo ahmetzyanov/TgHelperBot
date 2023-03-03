@@ -12,8 +12,7 @@ from aiogram.fsm.context import FSMContext
 from credentials import *
 from replies import record_reply, main_reply, sure_reply
 from functions import *
-from Buttons import Buttons
-from CallbackData import CallbackData
+from Buttons import Buttons, ListRecords, GetRecInfo
 
 from aiogram.fsm.state import State, StatesGroup
 
@@ -74,14 +73,11 @@ async def dns(callback: CallbackQuery) -> None:
 '''
 
 
-@dp.callback_query(Text(startswith="zone"))
-async def zones_callback(callback: CallbackQuery, state: FSMContext) -> None:
-    # callback_data = zone_<zone_id>, so we need to parse zone_id:
-    transaction_id = callback.data.split('_')[1]
-    data = CallbackData.get_from_memory(transaction_id)
-    record_id = data['record_id']
-    zone_id = data['zone_id']
-    action = data['action']
+@dp.callback_query(ListRecords.filter())
+async def zones_callback(callback: CallbackQuery, state: FSMContext, callback_data: ListRecords) -> None:
+    record_id = callback_data.record_id
+    zone_id = callback_data.zone_id
+    action = callback_data.action
 
     # Show zone's records ( if action is deleting, then show records after delete)
     if action == 'del':
@@ -98,17 +94,16 @@ async def zones_callback(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.answer()
 
 
-@dp.callback_query(Text(startswith="rec_"))
-async def record_callback(callback: CallbackQuery) -> None:
-    transaction_id = callback.data.split('_')[1]
-    data = CallbackData.get_from_memory(transaction_id)
-    record_id = data['record_id']
-    zone_id = data['zone_id']
+@dp.callback_query(GetRecInfo.filter())
+async def record_callback(callback: CallbackQuery, callback_data: GetRecInfo) -> None:
+    record_id = callback_data.record_id
+    zone_id = callback_data.zone_id
+    action = callback_data.action
 
     parsed_output = await get_records(cf=cf, zone_id=zone_id, record_id=record_id, zone=False)
 
     # Delete confirmation proceeding
-    if data['action'] == 'confirm':
+    if action == 'confirm':
         await callback.message.edit_text(text=sure_reply, reply_markup=Buttons.confirmation(zone_id, record_id))
         await callback.answer()
         raise CancelledError
