@@ -2,7 +2,6 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from vars import main_buttons
 from aiogram.filters.callback_data import CallbackData
-from pydantic import validator
 
 
 
@@ -31,12 +30,14 @@ class Buttons:
     @staticmethod
     def list_zones(zones) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
+        print('start list zones')
         for zone in zones:
             callback_data = ListRecords(zone_id=zone['id'])
             print(callback_data)
             builder.button(text=zone['name'],
                            callback_data=callback_data)
         builder.row(InlineKeyboardButton(text='Main Menu', callback_data="menu"))
+        print('end list zones')
         return builder.as_markup()
 
     @staticmethod
