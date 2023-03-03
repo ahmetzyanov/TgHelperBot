@@ -39,7 +39,7 @@ class Buttons:
     def records(records, zone_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for record in records:
-            callback_data = GetRecInfo(zone_id=zone_id, record_id=record['id'])
+            callback_data = GetRecInfo(zone_id=str(zone_id), record_id=str(record['id']))
             builder.row(InlineKeyboardButton(text=f"{record['name']} {record['type']}", callback_data=callback_data))
 
         add_record_callback_data = ListRecords(action='add', zone_id=zone_id)
