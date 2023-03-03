@@ -12,7 +12,7 @@ from aiogram.fsm.context import FSMContext
 from credentials import *
 from replies import record_reply, main_reply, sure_reply
 from functions import *
-from Buttons import Buttons, ListRecords, GetRecInfo
+from Buttons import Buttons, ListRecords, GetRecInfo, DelRecConfirm
 
 from aiogram.fsm.state import State, StatesGroup
 
@@ -65,7 +65,7 @@ async def ssh(callback: CallbackQuery) -> None:
 async def dns(callback: CallbackQuery) -> None:
     await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     zones_list = cf.zones.get()
-    await callback.message.answer('Your zones are:', reply_markup=Buttons.dns(zones_list))
+    await callback.message.answer('Your zones are:', reply_markup=Buttons.list_zones(zones_list))
 
 
 '''
@@ -74,42 +74,35 @@ async def dns(callback: CallbackQuery) -> None:
 
 
 @dp.callback_query(ListRecords.filter())
-async def zones_callback(callback: CallbackQuery, state: FSMContext, callback_data: ListRecords) -> None:
-    record_id = callback_data.record_id
+async def list_recs_cb_handler(callback: CallbackQuery, state: FSMContext, callback_data: ListRecords) -> None:
+    #record_id = callback_data.record_id
     zone_id = callback_data.zone_id
-    action = callback_data.action
+    #action = callback_data.action
 
     # Show zone's records ( if action is deleting, then show records after delete)
-    if action == 'del':
-        await cf.zones.dns_records.delete(zone_id, record_id)
-        await callback.answer(text=f'Record successfully deleted!', show_alert=True)
-    elif action == 'add':
-        await state.set_state(Form.add_rec)
-        await callback.message.edit_text(text="Enter record you'd like to add", reply_markup=Buttons.add_rec(zone_id))
-        await asyncio.sleep(10)
+    #if action == 'del':
+    ##    await cf.zones.dns_records.delete(zone_id, record_id)
+    #    await callback.answer(text=f'Record successfully deleted!', show_alert=True)
+    #elif action == 'add':
+    #    await state.set_state(Form.add_rec)
+    #    await callback.message.edit_text(text="Enter record you'd like to add", reply_markup=Buttons.add_rec(zone_id))
+    #    await asyncio.sleep(10)
 
     parsed_output = await get_records(cf=cf, zone_id=zone_id, zone=True)
 
-    await callback.message.edit_text('Click to configure record:', reply_markup=Buttons.records(parsed_output, zone_id))
+    await callback.message.edit_text('Click to configure record:', reply_markup=Buttons.list_records(parsed_output, zone_id))
     await callback.answer()
 
 
 @dp.callback_query(GetRecInfo.filter())
-async def record_callback(callback: CallbackQuery, callback_data: GetRecInfo) -> None:
+async def get_rec_info_cb_handler(callback: CallbackQuery, callback_data: GetRecInfo) -> None:
     record_id = callback_data.record_id
     zone_id = callback_data.zone_id
-    action = callback_data.action
 
     parsed_output = await get_records(cf=cf, zone_id=zone_id, record_id=record_id, zone=False)
 
-    # Delete confirmation proceeding
-    if action == 'confirm':
-        await callback.message.edit_text(text=sure_reply, reply_markup=Buttons.confirmation(zone_id, record_id))
-        await callback.answer()
-        raise CancelledError
-
     await callback.message.edit_text(text=record_reply(parsed_output[0]),
-                                     reply_markup=Buttons.record(zone_id, record_id=record_id))
+                                     reply_markup=Buttons.get_rec_info(zone_id, record_id=record_id))
     await callback.answer()
 
 
@@ -118,6 +111,14 @@ async def add_record(message: Message, state: FSMContext) -> None:
     await state.clear()
     await message.edit_text(f'Record "{message.text}" successfully added!')
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
+
+@dp.callback_query(DelRecConfirm.filter())
+async def del_rec_conf_cb_handler(callback: CallbackQuery, callback_data: GetRecInfo) -> None:
+    record_id = callback_data.record_id
+    zone_id = callback_data.zone_id
+    await callback.message.edit_text(text=sure_reply, reply_markup=Buttons.rec_del_conf(zone_id, record_id))
+    await callback.answer()
 
 
 '''

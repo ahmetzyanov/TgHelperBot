@@ -7,14 +7,19 @@ from typing import Optional
 
 class ListRecords(CallbackData, prefix="zone"):
     zone_id: str
-    action: Optional[str]
-    record_id: Optional[str]
+    #action: Optional[str]
+    #record_id: Optional[str]
 
 
 class GetRecInfo(CallbackData, prefix="rec"):
     zone_id: str
     record_id: str
-    action: Optional[str]
+
+
+class DelRecConfirm(CallbackData, prefix="rec"):
+    zone_id: str
+    record_id: str
+
 
 class Buttons:
     @staticmethod
@@ -25,7 +30,7 @@ class Buttons:
         return builder.as_markup()
 
     @staticmethod
-    def dns(zones) -> InlineKeyboardMarkup:
+    def list_zones(zones) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for zone in zones:
             callback_data = ListRecords(zone_id=zone['id'])
@@ -35,7 +40,7 @@ class Buttons:
         return builder.as_markup()
 
     @staticmethod
-    def records(records, zone_id) -> InlineKeyboardMarkup:
+    def list_records(records, zone_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for record in records:
             callback_data = GetRecInfo(zone_id=str(zone_id), record_id=str(record['id']))
@@ -50,9 +55,9 @@ class Buttons:
         return builder.as_markup()
 
     @staticmethod
-    def record(zone_id, record_id) -> InlineKeyboardMarkup:
+    def get_rec_info(zone_id, record_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
-        delete_rec_callback_data = GetRecInfo(zone_id=zone_id, record_id=record_id, action='confirm')
+        delete_rec_callback_data = DelRecConfirm(zone_id=zone_id, record_id=record_id)
         back_callback_data = ListRecords(zone_id=zone_id)
         builder.row(InlineKeyboardButton(text='Delete record', callback_data=delete_rec_callback_data),
                     InlineKeyboardButton(text='Back', callback_data=back_callback_data))
@@ -66,7 +71,7 @@ class Buttons:
         return builder.as_markup()
 
     @staticmethod
-    def confirmation(zone_id, record_id) -> InlineKeyboardMarkup:
+    def rec_del_conf(zone_id, record_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         del_rec_callback_data = ListRecords(record_id=record_id, zone_id=zone_id, action='del')
         canc_callback_data = ListRecords(zone_id=zone_id)
