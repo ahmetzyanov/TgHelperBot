@@ -33,8 +33,6 @@ class Buttons:
         print('start list zones')
         for zone in zones:
             callback_data = ListRecords(zone_id=zone['id'])
-            print(callback_data.pack() + ' pack')
-            print(type(callback_data.pack()))
             builder.button(text=zone['name'],
                            callback_data=callback_data.pack())
         builder.row(InlineKeyboardButton(text='Main Menu', callback_data="menu"))
@@ -46,7 +44,7 @@ class Buttons:
         builder = InlineKeyboardBuilder()
         for record in records:
             callback_data = GetRecInfo(zone_id=str(zone_id), record_id=str(record['id']))
-            builder.row(InlineKeyboardButton(text=f"{record['name']} {record['type']}", callback_data=callback_data))
+            builder.row(InlineKeyboardButton(text=f"{record['name']} {record['type']}", callback_data=callback_data.pack()))
 
         add_record_callback_data = ListRecords(action='add', zone_id=zone_id)
         builder.row(InlineKeyboardButton(text='Add record', callback_data=add_record_callback_data))
