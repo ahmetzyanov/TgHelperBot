@@ -16,7 +16,6 @@ class GetRecInfo(CallbackData, prefix="rec"):
     record_id: str
     action: Optional[str]
 
-
 class Buttons:
     @staticmethod
     def main_menu() -> InlineKeyboardMarkup:
