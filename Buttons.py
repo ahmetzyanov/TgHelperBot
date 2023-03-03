@@ -7,14 +7,14 @@ from typing import Optional
 
 class ListRecords(CallbackData, prefix="zone"):
     zone_id: str
-    action: Optional[str] = None
-    record_id: Optional[str] = None
+    action: Optional[str]
+    record_id: Optional[str]
 
 
 class GetRecInfo(CallbackData, prefix="rec"):
     zone_id: str
     record_id: str
-    action: Optional[str] = None
+    action: Optional[str]
 
 
 class Buttons:
