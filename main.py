@@ -90,7 +90,8 @@ async def list_recs_cb_handler(callback: CallbackQuery, state: FSMContext, callb
 
     parsed_output = await get_records(cf=cf, zone_id=zone_id, zone=True)
 
-    await callback.message.edit_text('Click to configure record:', reply_markup=Buttons.list_records(parsed_output, zone_id))
+    await callback.message.edit_text('Click to configure record:',
+                                     reply_markup=Buttons.list_records(parsed_output, zone_id))
     await callback.answer()
 
 
