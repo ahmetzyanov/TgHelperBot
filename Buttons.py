@@ -47,7 +47,7 @@ class Buttons:
     def list_recs(records, zone_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for record in records:
-            uniq_id = uuid.uuid4()
+            uniq_id = str(uuid.uuid4())
             write_id(key=uniq_id, zone_id=zone_id, record_id=record['id'])
             callback_data = GetRecInfo(id=uniq_id)
             builder.button(text=f"{record['name']} {record['type']}", callback_data=callback_data)
