@@ -1,8 +1,16 @@
 def record_reply(data) -> str:
-    return f'''Record: {data["name"]}
-{data["type"]}\t{data["content"]}
-{"Proxied: " + str(data["proxied"]) if bool(data["proxiable"]) else "Not proxiable"}'''
+    record_name = data['name']
+    record_type = data['type']
+    record_content = data['content']
+    record_proxiable = bool(data['proxiable'])
+    record_proxied = str(data['proxied'])
+
+    reply = f'''Record: {record_name}
+{record_type}\t{record_content}
+{"Proxied: " + record_proxiable if record_proxied else "Not proxiable"}'''
+
+    return reply
 
 
-main_reply = "Привет"
+main_reply = "Greeting, Boss"
 sure_reply = 'Are you sure you want to delete record?'

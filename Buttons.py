@@ -1,27 +1,13 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from vars import main_buttons
-from aiogram.filters.callback_data import CallbackData
+from CloudFlare import CloudFlare
 import uuid
+from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, DelRec, AddRec
 
+from credentials import EMAIL, CF_API_TOKEN
 
-class ListRecords(CallbackData, prefix="zone"):
-    zone_id: str
-
-
-class GetRecInfo(CallbackData, prefix="rec"):
-    id: str
-
-
-class DelRecConfirm(CallbackData, prefix="rec"):
-    id: str
-
-memory = {}
-
-
-def write_id(key, **kwargs):
-    global memory
-    memory[key] = kwargs
+cf = CloudFlare(email=EMAIL, key=CF_API_TOKEN)
 
 
 class Buttons:
@@ -33,9 +19,10 @@ class Buttons:
         return builder.as_markup()
 
     @staticmethod
-    def list_zones(zones) -> InlineKeyboardMarkup:
+    def list_zones() -> InlineKeyboardMarkup:
+        zones_list = cf.zones.get()
         builder = InlineKeyboardBuilder()
-        for zone in zones:
+        for zone in zones_list:
             callback_data = ListRecords(zone_id=zone['id'])
             builder.button(text=zone['name'],
                            callback_data=callback_data)
@@ -51,8 +38,8 @@ class Buttons:
             callback_data = GetRecInfo(id=uniq_id)
             builder.button(text=f"{record['name']} {record['type']}", callback_data=callback_data)
         builder.adjust(1)
-        add_record_callback_data = ListRecords(action='add', zone_id=zone_id)
-        builder.row(InlineKeyboardButton(text='Add record', callback_data=add_record_callback_data.pack()))
+        add_rec_cb_data = AddRec(zone_id=zone_id)
+        builder.row(InlineKeyboardButton(text='Add record', callback_data=add_rec_cb_data.pack()))
 
         builder.row(InlineKeyboardButton(text='Main Menu', callback_data="menu"),
                     InlineKeyboardButton(text='Back', callback_data="DNS"))
@@ -80,8 +67,10 @@ class Buttons:
     @staticmethod
     def rec_del_conf(zone_id, record_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
-        del_rec_callback_data = ListRecords(record_id=record_id, zone_id=zone_id, action='del')
-        canc_callback_data = ListRecords(zone_id=zone_id)
+        uniq_id = str(uuid.uuid4())
+        write_id(key=uniq_id, zone_id=zone_id, record_id=record_id)
+        del_rec_callback_data = DelRec(id=uniq_id).pack()
+        canc_callback_data = ListRecords(zone_id=zone_id).pack()
         builder.row(InlineKeyboardButton(text='Delete record', callback_data=del_rec_callback_data),
                     InlineKeyboardButton(text='Cancel', callback_data=canc_callback_data))
         return builder.as_markup()
