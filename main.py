@@ -108,7 +108,7 @@ async def del_rec_cb_handler(callback: CallbackQuery, callback_data: DelRec) -> 
     zone_id = data['zone_id']
     record_id = data['record_id']
 
-    await cf.zones.dns_records.delete(zone_id, record_id)
+    cf.zones.dns_records.delete(zone_id, record_id)
     await callback.answer(text=f'Record successfully deleted!', show_alert=True)
     await list_recs_cb_handler(callback=callback, callback_data=ListRecords(zone_id=zone_id))
 
