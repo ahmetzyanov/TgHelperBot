@@ -30,22 +30,20 @@ class Buttons:
     @staticmethod
     def list_zones(zones) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
-        print('start list zones')
         for zone in zones:
             callback_data = ListRecords(zone_id=zone['id'])
             builder.button(text=zone['name'],
-                           callback_data=callback_data.pack())
+                           callback_data=callback_data)
         builder.row(InlineKeyboardButton(text='Main Menu', callback_data="menu"))
-        print('end list zones')
         return builder.as_markup()
 
     @staticmethod
-    def list_records(records, zone_id) -> InlineKeyboardMarkup:
+    def list_recs(records, zone_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for record in records:
             callback_data = GetRecInfo(zone_id=str(zone_id), record_id=str(record['id']))
-            builder.row(InlineKeyboardButton(text=f"{record['name']} {record['type']}", callback_data=callback_data.pack()))
-
+            builder.button(text=f"{record['name']} {record['type']}", callback_data=callback_data)
+        builder.adjust(1)
         add_record_callback_data = ListRecords(action='add', zone_id=zone_id)
         builder.row(InlineKeyboardButton(text='Add record', callback_data=add_record_callback_data))
 
