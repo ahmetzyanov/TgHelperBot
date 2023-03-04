@@ -14,9 +14,7 @@ class GetRecInfo(CallbackData, prefix="rec"):
 
 
 class DelRecConfirm(CallbackData, prefix="rec"):
-    zone_id: str
-    record_id: str
-
+    id: str
 
 memory = {}
 
@@ -64,8 +62,10 @@ class Buttons:
     @staticmethod
     def get_rec_info(zone_id, record_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
-        delete_rec_callback_data = DelRecConfirm(zone_id=zone_id, record_id=record_id)
-        back_callback_data = ListRecords(zone_id=zone_id)
+        uniq_id = str(uuid.uuid4())
+        write_id(key=uniq_id, zone_id=zone_id, record_id=record_id)
+        delete_rec_callback_data = DelRecConfirm(id=uniq_id).pack()
+        back_callback_data = ListRecords(zone_id=zone_id).pack()
         builder.row(InlineKeyboardButton(text='Delete record', callback_data=delete_rec_callback_data),
                     InlineKeyboardButton(text='Back', callback_data=back_callback_data))
         return builder.as_markup()
