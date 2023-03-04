@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from vars import main_buttons
 from aiogram.filters.callback_data import CallbackData
-
+import uuid
 
 
 class ListRecords(CallbackData, prefix="zone"):
@@ -10,13 +10,19 @@ class ListRecords(CallbackData, prefix="zone"):
 
 
 class GetRecInfo(CallbackData, prefix="rec"):
-    zone_id: str
-    record_id: str
+    id: str
 
 
 class DelRecConfirm(CallbackData, prefix="rec"):
     zone_id: str
     record_id: str
+
+
+memory = {}
+
+
+async def write_id(key, **kwargs):
+    memory[key] = kwargs
 
 
 class Buttons:
@@ -41,7 +47,9 @@ class Buttons:
     def list_recs(records, zone_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for record in records:
-            callback_data = GetRecInfo(zone_id=str(zone_id), record_id=str(record['id']))
+            uniq_id = uuid.uuid4()
+            write_id(key=uniq_id, zone_id=zone_id, record_id=record['id'])
+            callback_data = GetRecInfo(id=uniq_id)
             builder.button(text=f"{record['name']} {record['type']}", callback_data=callback_data)
         builder.adjust(1)
         add_record_callback_data = ListRecords(action='add', zone_id=zone_id)

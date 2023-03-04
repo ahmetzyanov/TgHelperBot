@@ -12,7 +12,7 @@ from aiogram.fsm.context import FSMContext
 from credentials import *
 from replies import record_reply, main_reply, sure_reply
 from functions import *
-from Buttons import Buttons, ListRecords, GetRecInfo, DelRecConfirm
+from Buttons import Buttons, ListRecords, GetRecInfo, DelRecConfirm, memory
 
 from aiogram.fsm.state import State, StatesGroup
 
@@ -97,13 +97,15 @@ async def list_recs_cb_handler(callback: CallbackQuery, state: FSMContext, callb
 
 @dp.callback_query(GetRecInfo.filter())
 async def get_rec_info_cb_handler(callback: CallbackQuery, callback_data: GetRecInfo) -> None:
-    record_id = callback_data.record_id
-    zone_id = callback_data.zone_id
+    mem_id = callback_data.id
+    data = memory.get(mem_id)
+    zone_id = data['zone_id']
+    record_id = data['record_id']
 
     parsed_output = await get_records(cf=cf, zone_id=zone_id, record_id=record_id, zone=False)
 
     await callback.message.edit_text(text=record_reply(parsed_output[0]),
-                                     reply_markup=Buttons.get_rec_info(zone_id, record_id=record_id))
+                                     reply_markup=Buttons.get_rec_info(zone_id=zone_id, record_id=record_id))
     await callback.answer()
 
 
