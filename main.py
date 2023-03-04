@@ -123,7 +123,7 @@ async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRec
 @form_router.message(Form.add_rec)
 async def add_rec_answer_handler(message: Message, state: FSMContext) -> None:
     await state.clear()
-    await message.edit_text(f'Record "{message.text}" successfully added!')
+    await message.answer(f'Record "{message.text}" successfully added!')
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
     # await list_recs_cb_handler(callback=callback, callback_data=ListRecords(zone_id=zone_id))
