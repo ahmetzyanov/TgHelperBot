@@ -53,7 +53,7 @@ class Buttons:
             builder.button(text=f"{record['name']} {record['type']}", callback_data=callback_data)
         builder.adjust(1)
         add_record_callback_data = ListRecords(action='add', zone_id=zone_id)
-        builder.row(InlineKeyboardButton(text='Add record', callback_data=add_record_callback_data.pack))
+        builder.row(InlineKeyboardButton(text='Add record', callback_data=add_record_callback_data.pack()))
 
         builder.row(InlineKeyboardButton(text='Main Menu', callback_data="menu"),
                     InlineKeyboardButton(text='Back', callback_data="DNS"))
