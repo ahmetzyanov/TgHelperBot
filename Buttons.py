@@ -21,7 +21,8 @@ class DelRecConfirm(CallbackData, prefix="rec"):
 memory = {}
 
 
-async def write_id(key, **kwargs):
+def write_id(key, **kwargs):
+    global memory
     memory[key] = kwargs
 
 
