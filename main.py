@@ -53,7 +53,6 @@ async def wg(callback: CallbackQuery) -> None:
 
 @dp.callback_query(Text(startswith="DNS"))
 async def list_domains(callback: CallbackQuery) -> None:
-    #await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     await callback.message.edit_text('Your zones are:', reply_markup=Buttons.list_zones())
 
 
@@ -114,13 +113,14 @@ async def del_rec_cb_handler(callback: CallbackQuery, callback_data: DelRec) -> 
 async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRec, state: FSMContext) -> None:
     zone_id = callback_data.zone_id
     await state.set_state(DNSForm.rec_name)
+    #await state.set_data()
     await callback.message.edit_text(text="Enter record you'd like to add", reply_markup=Buttons.add_rec(zone_id))
 
 
 @dns_add_rec_form.message(DNSForm.rec_name)
 async def add_rec_name_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(DNSForm.content)
-    await state.set_data({'record_name': message.text})
+    await state.set_data({'name': message.text})
     await message.answer(f'Write record content:')
 
 
@@ -136,8 +136,14 @@ async def add_rec_content_handler(message: Message, state: FSMContext) -> None:
 @dns_add_rec_form.message(DNSForm.rec_type)
 async def add_rec_type_handler(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
-    rec_name = data['record_name']
-    await message.answer(f'Record "{rec_name}" successfully added!')
+    data['type'] = message.text
+    rec_name = data['name']
+    try:
+        #cf.zones.dns_records.post(zone_id, data=dns_record)
+        await message.answer(f'Record "{rec_name}" successfully added!')
+    except Exception as exc:
+        await message.answer(f'Error: "{exc}"')
+
     await state.clear()
 
 
