@@ -32,8 +32,11 @@ cf = CloudFlare(email=EMAIL, key=CF_API_TOKEN)
 bot = Bot(token=TG_API_TOKEN, parse_mode="HTML")
 dp = Dispatcher()
 
-form_router = Router()
-dp.include_router(form_router)
+dns_add_rec_form = Router()
+dns_router = Router()
+
+dns_router.include_router(dns_add_rec_form)
+dp.include_router(dns_router)
 
 '''
     Commands
@@ -65,7 +68,7 @@ async def dns(callback: CallbackQuery) -> None:
 '''
 
 
-@dp.callback_query(ListRecords.filter())
+@dns_router.callback_query(ListRecords.filter())
 async def list_recs_cb_handler(callback: CallbackQuery, callback_data: ListRecords) -> None:
     zone_id = callback_data.zone_id
 
@@ -76,7 +79,7 @@ async def list_recs_cb_handler(callback: CallbackQuery, callback_data: ListRecor
     await callback.answer()
 
 
-@dp.callback_query(GetRecInfo.filter())
+@dns_router.callback_query(GetRecInfo.filter())
 async def get_rec_info_cb_handler(callback: CallbackQuery, callback_data: GetRecInfo) -> None:
     mem_id = callback_data.id
     data = memory.get(mem_id)
@@ -90,7 +93,7 @@ async def get_rec_info_cb_handler(callback: CallbackQuery, callback_data: GetRec
     await callback.answer()
 
 
-@dp.callback_query(DelRecConfirm.filter())
+@dns_router.callback_query(DelRecConfirm.filter())
 async def del_rec_conf_cb_handler(callback: CallbackQuery, callback_data: DelRecConfirm) -> None:
     mem_id = callback_data.id
     data = memory.get(mem_id)
@@ -101,7 +104,7 @@ async def del_rec_conf_cb_handler(callback: CallbackQuery, callback_data: DelRec
     await callback.answer()
 
 
-@dp.callback_query(DelRec.filter())
+@dns_router.callback_query(DelRec.filter())
 async def del_rec_cb_handler(callback: CallbackQuery, callback_data: DelRec) -> None:
     mem_id = callback_data.id
     data = memory.get(mem_id)
@@ -113,14 +116,14 @@ async def del_rec_cb_handler(callback: CallbackQuery, callback_data: DelRec) -> 
     await list_recs_cb_handler(callback=callback, callback_data=ListRecords(zone_id=zone_id))
 
 
-@dp.callback_query(AddRec.filter())
+@dns_router.callback_query(AddRec.filter())
 async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRec, state: FSMContext) -> None:
     zone_id = callback_data.zone_id
     await state.set_state(Form.add_rec)
     await callback.message.edit_text(text="Enter record you'd like to add", reply_markup=Buttons.add_rec(zone_id))
 
 
-@form_router.message(Form.add_rec)
+@dns_add_rec_form.message(Form.add_rec)
 async def add_rec_answer_handler(message: Message, state: FSMContext) -> None:
     await state.clear()
     await message.answer(f'Record "{message.text}" successfully added!')
