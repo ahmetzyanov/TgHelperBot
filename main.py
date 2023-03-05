@@ -52,9 +52,9 @@ async def wg(callback: CallbackQuery) -> None:
 
 
 @dp.callback_query(Text(startswith="DNS"))
-async def dns(callback: CallbackQuery) -> None:
-    await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    await callback.message.answer('Your zones are:', reply_markup=Buttons.list_zones())
+async def list_domains(callback: CallbackQuery) -> None:
+    #await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+    await callback.message.edit_text('Your zones are:', reply_markup=Buttons.list_zones())
 
 
 '''
