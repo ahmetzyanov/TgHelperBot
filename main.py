@@ -128,7 +128,7 @@ async def add_rec_name_handler(message: Message, state: FSMContext) -> None:
 async def add_rec_content_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(DNSForm.rec_type)
     print(await state.get_data(), "b")
-    data = await state.get_data()[:]
+    data = await state.get_data()
     data['content'] = message.text
     await state.set_data(data)
     print(await state.get_data(), 'p')
