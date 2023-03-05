@@ -12,5 +12,5 @@ def record_reply(data) -> str:
     return reply
 
 
-main_reply = "Greeting, Boss"
+main_reply = "Greeting, Mr"
 sure_reply = 'Are you sure you want to delete record?'
