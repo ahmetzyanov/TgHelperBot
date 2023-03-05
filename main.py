@@ -139,9 +139,11 @@ async def add_rec_content_handler(message: Message, state: FSMContext) -> None:
 async def add_rec_type_handler(message: Message, state: FSMContext) -> None:
     await state.clear()
     data = await state.get_data()
-    rec_name = data['rec_name']
+    rec_name = data['record_name']
     await message.answer(f'Record "{rec_name}" successfully added!')
     #await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
+
 
 
 '''
