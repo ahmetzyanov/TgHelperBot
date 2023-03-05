@@ -137,12 +137,12 @@ async def add_rec_content_handler(message: Message, state: FSMContext) -> None:
 
 @dns_add_rec_form.message(DNSForm.rec_type)
 async def add_rec_type_handler(message: Message, state: FSMContext) -> None:
-    await state.clear()
     print(await state.get_data())
     data = await state.get_data()
 
     rec_name = data['record_name']
     await message.answer(f'Record "{rec_name}" successfully added!')
+    await state.clear()
 
 
 
