@@ -14,13 +14,7 @@ from replies import record_reply, main_reply, sure_reply
 from functions import *
 from Buttons import Buttons
 from CallbackFactory import ListRecords, GetRecInfo, DelRecConfirm, memory, DelRec, AddRec
-
-from aiogram.fsm.state import State, StatesGroup
-
-
-class Form(StatesGroup):
-    add_rec = State()
-
+from States import DNSForm
 
 # Configure logging
 logging.basicConfig(level=INFO)
@@ -88,7 +82,7 @@ async def get_rec_info_cb_handler(callback: CallbackQuery, callback_data: GetRec
 
     parsed_output = await get_records(cf=cf, zone_id=zone_id, record_id=record_id, zone=False)
 
-    await callback.message.edit_text(text=record_reply(parsed_output[0]),
+    await callback.message.edit_text(text=record_reply(parsed_output),
                                      reply_markup=Buttons.get_rec_info(zone_id=zone_id, record_id=record_id))
     await callback.answer()
 
@@ -119,18 +113,49 @@ async def del_rec_cb_handler(callback: CallbackQuery, callback_data: DelRec) -> 
 @dns_router.callback_query(AddRec.filter())
 async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRec, state: FSMContext) -> None:
     zone_id = callback_data.zone_id
-    await state.set_state(Form.add_rec)
+    await state.set_state(DNSForm.rec_name)
     await callback.message.edit_text(text="Enter record you'd like to add", reply_markup=Buttons.add_rec(zone_id))
 
 
-@dns_add_rec_form.message(Form.add_rec)
-async def add_rec_answer_handler(message: Message, state: FSMContext) -> None:
+@dns_add_rec_form.message(DNSForm.rec_name)
+async def add_rec_name_handler(message: Message, state: FSMContext) -> None:
+    await state.set_state(DNSForm.content)
+    await state.set_data({'record_name': message.text})
+    await message.answer(f'Write record content:')
+    #await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
+
+@dns_add_rec_form.message(DNSForm.content)
+async def add_rec_content_handler(message: Message, state: FSMContext) -> None:
+    await state.set_state(DNSForm.rec_type)
+    data = await state.get_data()
+    data['content'] = message.text
+    await state.set_data(data)
+    await message.answer(f'Write record type [A, CNAME, AAA, etc.]:')
+    #await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
+
+@dns_add_rec_form.message(DNSForm.rec_type)
+async def add_rec_type_handler(message: Message, state: FSMContext) -> None:
     await state.clear()
-    await message.answer(f'Record "{message.text}" successfully added!')
-    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    data = await state.get_data()
+    rec_name = data['rec_name']
+    await message.answer(f'Record "{rec_name}" successfully added!')
+    #await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
-    # await list_recs_cb_handler(callback=callback, callback_data=ListRecords(zone_id=zone_id))
 
+'''
+    dns_records = [
+        {'name':'foo', 'type':'AAAA', 'content':'2001:d8b::1'},
+        {'name':'foo', 'type':'A', 'content':'192.168.0.1'},
+        {'name':'duh', 'type':'A', 'content':'10.0.0.1', 'ttl':120},
+        {'name':'bar', 'type':'CNAME', 'content':'foo'},
+        {'name':'shakespeare', 'type':'TXT', 'content':"What's in a name? That which we call a rose by any other name ..."}
+    ]
+
+    for dns_record in dns_records:
+        r = cf.zones.dns_records.post(zone_id, data=dns_record)
+'''
 
 '''
     Main Menu
