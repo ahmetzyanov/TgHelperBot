@@ -28,7 +28,7 @@ spec:
   stages {
     stage('Notify about started job') {
       steps {
-        telegramSend """🕘 Started job: ```${env.BUILD_TAG}```
+        telegramSend """```🕘 ${env.BUILD_TAG}```
 Build: ${env.BUILD_URL}
 Job: ${env.JOB_URL}"""
       }
