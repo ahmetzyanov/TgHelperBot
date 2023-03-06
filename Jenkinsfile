@@ -28,9 +28,9 @@ spec:
   stages {
     stage('Notify about started job') {
       steps {
-        telegramSend """Started job with tag: **${env.BUILD_TAG}**
-Build URL: ${env.BUILD_URL}
-Job URL: ${env.JOB_URL}"""
+        telegramSend """🕘 Started job with tag: **${env.BUILD_TAG}**
+```Build URL: ${env.BUILD_URL}
+Job URL: ${env.JOB_URL}```"""
       }
     }
     stage('Git clone kubernetes configs') {
@@ -44,6 +44,9 @@ Job URL: ${env.JOB_URL}"""
           }
           withCredentials([string(credentialsId: 'gmail', variable: 'EMAIL')]) {
             sh("sed -i 's/gmail/$EMAIL/' credentials.py")
+          }
+          withCredentials([string(credentialsId: 'tghelperbot_whitelist', variable: 'WHITELIST')]) {
+            sh("sed -i 's/WHITELIST/$WHITELIST/' credentials.py")
           }
         }
       }
