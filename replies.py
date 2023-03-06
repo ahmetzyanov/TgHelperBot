@@ -7,7 +7,7 @@ def record_reply(data) -> str:
 
     reply = f'''Record: {record_name}
 {record_type}\t{record_content}
-{"Proxied: " + record_proxied if  record_proxiable else "Not proxiable"}'''
+{"Proxied: " + record_proxied if record_proxiable else "Not proxiable"}'''
 
     return reply
 

@@ -28,9 +28,9 @@ spec:
   stages {
     stage('Notify about started job') {
       steps {
-        telegramSend """🕘 Started job with tag: **${env.BUILD_TAG}**
-```Build URL: ${env.BUILD_URL}
-Job URL: ${env.JOB_URL}```"""
+        telegramSend """🕘 Started job with tag: ```**${env.BUILD_TAG}**```
+Build URL: ${env.BUILD_URL}
+Job URL: ${env.JOB_URL}"""
       }
     }
     stage('Git clone kubernetes configs') {
@@ -63,7 +63,7 @@ Job URL: ${env.JOB_URL}```"""
                 image.push('latest')
               }
             } catch (Exception e) {
-              telegramSend "Unseccessfull TgHelperBot build. Job tag: **${env.BUILD_TAG}**"
+              telegramSend "❌ Unseccessfull TgHelperBot build. Job tag: **${env.BUILD_TAG}**"
               error "TgHelperBot build error"
             }
           }
@@ -81,7 +81,7 @@ Job URL: ${env.JOB_URL}```"""
               sh("kubectl apply -f tghelperbot_deployment.yaml")
             }
           } catch (Exception e) {
-            telegramSend "Unseccessfull TgHelperBot deployment. Job tag: **${env.BUILD_TAG}**"
+            telegramSend " ❌Unseccessfull TgHelperBot deployment. Job tag: **${env.BUILD_TAG}**"
             error "TgHelperBot deployment error"
           }
         }
@@ -97,7 +97,7 @@ Job URL: ${env.JOB_URL}```"""
                 sh("kubectl rollout status deployment.apps/tghelperbot-depl -n jenkins")
             }
           } catch (Exception e) {
-            telegramSend "TgHelperBot deployment error. Job tag: **${env.BUILD_TAG}**"
+            telegramSend "❌ TgHelperBot deployment error. Job tag: **${env.BUILD_TAG}**"
             error "TgHelperBot deployment error"
           }
         }
@@ -106,7 +106,7 @@ Job URL: ${env.JOB_URL}```"""
     stage("Telegram notification on success") {
       steps {
         script {
-          telegramSend "Successfully finished job with tag: **${env.BUILD_TAG}**"
+          telegramSend "✅ Successfully finished job with tag: **${env.BUILD_TAG}**"
         }
       }
     }
