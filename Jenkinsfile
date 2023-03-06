@@ -28,9 +28,9 @@ spec:
   stages {
     stage('Notify about started job') {
       steps {
-        telegramSend """🕘 Started job with tag: ```${env.BUILD_TAG}```
-Build URL: ${env.BUILD_URL}
-Job URL: ${env.JOB_URL}"""
+        telegramSend """🕘 Started job: ```${env.BUILD_TAG}```
+Build: ${env.BUILD_URL}
+Job: ${env.JOB_URL}"""
       }
     }
     stage('Git clone kubernetes configs') {
