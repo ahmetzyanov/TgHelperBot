@@ -8,7 +8,9 @@ from aiogram.filters import Text, Command
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 
-# My imports
+
+# Local imports
+from Middleware import WhitelistMiddleware
 from credentials import *
 from replies import record_reply, main_reply, sure_reply
 from functions import *
@@ -31,6 +33,7 @@ dns_router = Router()
 
 dns_router.include_router(dns_add_rec_form)
 dp.include_router(dns_router)
+dp.message.outer_middleware(WhitelistMiddleware())
 
 '''
     Commands
@@ -39,7 +42,6 @@ dp.include_router(dns_router)
 
 @dp.message(Command(commands=['id', 'getid', 'get_id']))
 async def send_id(message: Message) -> None:
-    await is_whitelisted(message.chat.id)
     await message.reply(str(message.chat.id))
 
 
@@ -158,7 +160,6 @@ async def add_rec_type_handler(message: Message, state: FSMContext) -> None:
 
 @dp.message(Command(commands=['start', 'help', 'menu', 'home']))
 async def send_welcome(message: Message) -> None:
-    await is_whitelisted(message.chat.id)
     await message.answer(main_reply, reply_markup=Buttons.main_menu())
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
