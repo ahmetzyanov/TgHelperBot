@@ -51,14 +51,14 @@ async def wg(callback: CallbackQuery) -> None:
     await callback.message.edit_text('Заглушка', reply_markup=Buttons.main_menu())
 
 
-@dp.callback_query(Text(startswith="DNS"))
-async def list_domains(callback: CallbackQuery) -> None:
-    await callback.message.edit_text('Your zones are:', reply_markup=Buttons.list_zones())
-
-
 '''
     DNS handlers
 '''
+
+
+@dns_router.callback_query(Text(startswith="DNS"))
+async def list_domains(callback: CallbackQuery) -> None:
+    await callback.message.edit_text('Your zones are:', reply_markup=Buttons.list_zones())
 
 
 @dns_router.callback_query(ListRecords.filter())
@@ -114,7 +114,7 @@ async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRec
     zone_id = callback_data.zone_id
     await state.set_state(DNSForm.rec_name)
     await state.set_data({'zone_id': zone_id})
-    await callback.message.edit_text(text="Enter record you'd like to add", reply_markup=Buttons.add_rec(zone_id))
+    await callback.message.edit_text(text="Enter record you'd like to add", reply_markup=Buttons.return_to_recs(zone_id))
 
 
 @dns_add_rec_form.message(DNSForm.rec_name)
@@ -122,8 +122,9 @@ async def add_rec_name_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(DNSForm.content)
     data = await state.get_data()
     data['name'] = message.text
+    zone_id = data.get('zone_id')
     await state.set_data(data)
-    await message.answer(f'Write record content:')
+    await message.answer(f'Write record content:', reply_markup=Buttons.return_to_recs(zone_id))
 
 
 @dns_add_rec_form.message(DNSForm.content)
@@ -131,8 +132,9 @@ async def add_rec_content_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(DNSForm.rec_type)
     data = await state.get_data()
     data['content'] = message.text
+    zone_id = data.get('zone_id')
     await state.set_data(data)
-    await message.answer(f'Write record type [A, CNAME, AAA, etc.]:')
+    await message.answer(f'Write record type [A, CNAME, AAA, etc.]:', reply_markup=Buttons.return_to_recs(zone_id))
 
 
 @dns_add_rec_form.message(DNSForm.rec_type)
@@ -147,26 +149,7 @@ async def add_rec_type_handler(message: Message, state: FSMContext) -> None:
     except Exception as exc:
         await message.answer(f'Error: "{exc}"')
     await state.clear()
-    try:
-        await list_recs_cb_handler(CallbackQuery(), ListRecords(zone_id=zone_id))
-    except Exception as exc:
-        await message.answer(f'Error: "{exc}"')
 
-
-
-
-'''
-    dns_records = [
-        {'name':'foo', 'type':'AAAA', 'content':'2001:d8b::1'},
-        {'name':'foo', 'type':'A', 'content':'192.168.0.1'},
-        {'name':'duh', 'type':'A', 'content':'10.0.0.1', 'ttl':120},
-        {'name':'bar', 'type':'CNAME', 'content':'foo'},
-        {'name':'shakespeare', 'type':'TXT', 'content':"What's in a name? That which we call a rose by any other name ..."}
-    ]
-
-    for dns_record in dns_records:
-        r = cf.zones.dns_records.post(zone_id, data=dns_record)
-'''
 
 '''
     Main Menu

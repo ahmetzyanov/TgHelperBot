@@ -58,7 +58,7 @@ class Buttons:
         return builder.as_markup()
 
     @staticmethod
-    def add_rec(zone_id) -> InlineKeyboardMarkup:
+    def return_to_recs(zone_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         back_callback_data = ListRecords(zone_id=zone_id)
         builder.button(text='Cancel', callback_data=back_callback_data)
