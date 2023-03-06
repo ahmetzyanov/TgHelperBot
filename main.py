@@ -113,14 +113,16 @@ async def del_rec_cb_handler(callback: CallbackQuery, callback_data: DelRec) -> 
 async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRec, state: FSMContext) -> None:
     zone_id = callback_data.zone_id
     await state.set_state(DNSForm.rec_name)
-    #await state.set_data()
+    await state.set_data({'zone_id': zone_id})
     await callback.message.edit_text(text="Enter record you'd like to add", reply_markup=Buttons.add_rec(zone_id))
 
 
 @dns_add_rec_form.message(DNSForm.rec_name)
 async def add_rec_name_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(DNSForm.content)
-    await state.set_data({'name': message.text})
+    data = await state.get_data()
+    data['name'] = message.text
+    await state.set_data(data)
     await message.answer(f'Write record content:')
 
 
@@ -138,13 +140,17 @@ async def add_rec_type_handler(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     data['type'] = message.text
     rec_name = data['name']
+    zone_id = data.pop('zone_id')
     try:
-        #cf.zones.dns_records.post(zone_id, data=dns_record)
+        cf.zones.dns_records.post(zone_id, data=data)
         await message.answer(f'Record "{rec_name}" successfully added!')
     except Exception as exc:
         await message.answer(f'Error: "{exc}"')
-
     await state.clear()
+    try:
+        await list_recs_cb_handler(CallbackQuery(), ListRecords(zone_id=zone_id))
+    except Exception as exc:
+        await message.answer(f'Error: "{exc}"')
 
 
 
