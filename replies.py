@@ -1,3 +1,4 @@
+
 def record_reply(data) -> str:
     record_name = data['name']
     record_type = data['type']
@@ -5,9 +6,9 @@ def record_reply(data) -> str:
     record_proxiable = bool(data['proxiable'])
     record_proxied = str(data['proxied'])
 
-    reply = f'''Record: {record_name}
+    reply = f'''Record: {record_name}```
 {record_type}\t{record_content}
-{"Proxied: " + record_proxied if record_proxiable else "Not proxiable"}'''
+{"Proxied: " + record_proxied if record_proxiable else "Not proxiable"}```'''
 
     return reply
 

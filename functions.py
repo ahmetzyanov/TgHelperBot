@@ -6,4 +6,4 @@ async def get_records(cf, zone_id, record_id=None, zone=True) -> list:
     fields = brief_fields if zone else full_fields
 
     return [{field: record[field] for field in fields} for record in zones] if zone \
-        else [{field: record[field] for field in fields} for record in zones if record['record_id'] == record_id][0]
+        else [{field: record[field] for field in fields} for record in zones if record['id'] == record_id][0]
