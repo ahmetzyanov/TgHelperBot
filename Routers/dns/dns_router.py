@@ -7,8 +7,8 @@ from aiogram.fsm.context import FSMContext
 from States import DNSForm
 from Buttons import Buttons
 from CloudFlare import CloudFlare
-from credentials import EMAIL, CF_API_TOKEN
-from replies import record_reply, sure_reply
+from vars.credentials import EMAIL, CF_API_TOKEN
+from vars.replies import record_reply, sure_reply
 from CallbackFactory import ListRecords, GetRecInfo, DelRecConfirm, memory, DelRec, AddRec
 
 

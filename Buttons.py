@@ -4,7 +4,7 @@ from CloudFlare import CloudFlare
 import uuid
 from functools import lru_cache
 # Local imports
-from credentials import EMAIL, CF_API_TOKEN
+from vars.credentials import EMAIL, CF_API_TOKEN
 from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, DelRec, AddRec
 
 

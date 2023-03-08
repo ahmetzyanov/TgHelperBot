@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 # Local imports
 from States import DNSForm
 from Buttons import Buttons
-from credentials import EMAIL, CF_API_TOKEN
+from vars.credentials import EMAIL, CF_API_TOKEN
 
 
 dns_add_rec_form = Router()

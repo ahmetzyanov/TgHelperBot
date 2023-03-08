@@ -38,16 +38,16 @@ Job: ${env.JOB_URL}```"""
       steps {
         script {
           withCredentials([string(credentialsId: 'tg_tghelperbot_token', variable: 'TOKEN')]) {
-            sh("sed -i 's/tg_tghelperbot_token/$TOKEN/' credentials.py")
+            sh("sed -i 's/tg_tghelperbot_token/$TOKEN/' vars/credentials.py")
           }
           withCredentials([string(credentialsId: 'cloudflare_token', variable: 'TOKEN')]) {
-            sh("sed -i 's/cloudflare_token/$TOKEN/' credentials.py")
+            sh("sed -i 's/cloudflare_token/$TOKEN/' vars/credentials.py")
           }
           withCredentials([string(credentialsId: 'gmail', variable: 'EMAIL')]) {
-            sh("sed -i 's/gmail/$EMAIL/' credentials.py")
+            sh("sed -i 's/gmail/$EMAIL/' vars/credentials.py")
           }
           withCredentials([string(credentialsId: 'tghelperbot_whitelist', variable: 'WHITELIST')]) {
-            sh("sed -i 's/WHITELIST/$WHITELIST/' credentials.py")
+            sh("sed -i 's/WHITELIST/$WHITELIST/' vars/credentials.py")
           }
         }
       }

@@ -2,7 +2,7 @@ from typing import Callable, Dict, Any, Awaitable
 
 from aiogram import BaseMiddleware
 from aiogram.types import Message
-from credentials import whitelist
+from vars.credentials import whitelist
 
 
 class WhitelistMiddleware(BaseMiddleware):
