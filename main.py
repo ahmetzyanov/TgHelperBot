@@ -2,7 +2,7 @@ from CloudFlare import CloudFlare
 import logging
 from logging import INFO
 import asyncio
-import multiprocessing
+#import multiprocessing
 
 from aiogram import Bot, Dispatcher, Router
 from aiogram.filters import Text, Command

@@ -5,7 +5,6 @@ import uuid
 from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, DelRec, AddRec
 from functools import lru_cache
 
-from main import main_buttons
 from credentials import EMAIL, CF_API_TOKEN
 
 cf = CloudFlare(email=EMAIL, key=CF_API_TOKEN)
@@ -15,6 +14,7 @@ class Buttons:
     @staticmethod
     @lru_cache(maxsize=50)
     def main_menu() -> InlineKeyboardMarkup:
+        from main import main_buttons
         builder = InlineKeyboardBuilder()
         for button in main_buttons:
             builder.add(InlineKeyboardButton(text=button, callback_data=button))
