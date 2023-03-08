@@ -21,5 +21,12 @@ spec:
       containers:
       - name: tghelperbot
         image: "registry.gitlab.com/ahmetzyanov/tghelperbot:BUILD_ID"
+        livenessProbe:
+          exec:
+            command:
+              - echo
+              - healthy
+          initialDelaySeconds: 5
+          periodSeconds: 5
       imagePullSecrets:
       - name: gitlab-cred
