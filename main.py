@@ -83,8 +83,8 @@ async def list_recs_cb_handler(callback: CallbackQuery, callback_data: ListRecor
 async def get_rec_info_cb_handler(callback: CallbackQuery, callback_data: GetRecInfo) -> None:
     mem_id = callback_data.id
     data = memory.get(mem_id)
-    zone_id = data['zone_id']
-    record_id = data['record_id']
+    zone_id = data.get('zone_id')
+    record_id = data.get('record_id')
 
     #record = [{field: record[field] for field in full_fields}
     #          for record in cf.zones.dns_records.get(zone_id)
@@ -107,8 +107,8 @@ async def get_rec_info_cb_handler(callback: CallbackQuery, callback_data: GetRec
 async def del_rec_conf_cb_handler(callback: CallbackQuery, callback_data: DelRecConfirm) -> None:
     mem_id = callback_data.id
     data = memory.get(mem_id)
-    zone_id = data['zone_id']
-    record_id = data['record_id']
+    zone_id = data.get('zone_id')
+    record_id = data.get('record_id')
 
     await callback.message.edit_text(text=sure_reply, reply_markup=Buttons.rec_del_conf(zone_id, record_id))
     await callback.answer()
@@ -118,8 +118,8 @@ async def del_rec_conf_cb_handler(callback: CallbackQuery, callback_data: DelRec
 async def del_rec_cb_handler(callback: CallbackQuery, callback_data: DelRec) -> None:
     mem_id = callback_data.id
     data = memory.get(mem_id)
-    zone_id = data['zone_id']
-    record_id = data['record_id']
+    zone_id = data.get('zone_id')
+    record_id = data.get('record_id')
 
     cf.zones.dns_records.delete(zone_id, record_id)
     await callback.answer(text=f'Record successfully deleted!', show_alert=True)
