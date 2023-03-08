@@ -11,6 +11,7 @@ from credentials import EMAIL, CF_API_TOKEN
 dns_add_rec_form = Router()
 cf = CloudFlare(email=EMAIL, key=CF_API_TOKEN)
 
+
 @dns_add_rec_form.message(DNSForm.rec_name)
 async def add_rec_name_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(DNSForm.content)

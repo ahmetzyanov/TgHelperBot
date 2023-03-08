@@ -9,13 +9,10 @@ from aiogram.types import CallbackQuery, Message
 from Buttons import Buttons
 from replies import main_reply
 from Routers.dns.dns_router import dns_router
-from Middleware import WhitelistMiddleware
-from credentials import EMAIL, CF_API_TOKEN, TG_API_TOKEN
+from WhitelistMiddleware import WhitelistMiddleware
 from Routers.dns.add_rec_router import dns_add_rec_form
+from credentials import EMAIL, CF_API_TOKEN, TG_API_TOKEN
 
-
-# Tuples
-main_buttons = ('DNS', 'WireGuard')
 
 # Configure logging
 logging.basicConfig(level=INFO)

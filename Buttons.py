@@ -2,10 +2,14 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from CloudFlare import CloudFlare
 import uuid
-from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, DelRec, AddRec
 from functools import lru_cache
-
+# Local imports
 from credentials import EMAIL, CF_API_TOKEN
+from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, DelRec, AddRec
+
+
+# Tuples
+main_buttons = ('DNS', 'WireGuard')
 
 cf = CloudFlare(email=EMAIL, key=CF_API_TOKEN)
 
@@ -14,7 +18,6 @@ class Buttons:
     @staticmethod
     @lru_cache(maxsize=50)
     def main_menu() -> InlineKeyboardMarkup:
-        from main import main_buttons
         builder = InlineKeyboardBuilder()
         for button in main_buttons:
             builder.add(InlineKeyboardButton(text=button, callback_data=button))
