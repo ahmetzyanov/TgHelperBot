@@ -99,7 +99,7 @@ Job: ${env.JOB_URL}```"""
                 sh("kubectl wait --for=condition=available --timeout=60s deployment.apps/tghelperbot-depl")
             }
           } catch (Exception e) {
-            telegramSend "❌ TgHelperBot deployment error. Job tag: **${env.BUILD_TAG}**"
+            telegramSend "❌ TgHelperBot deployment error. Job tag: **${env.BUILD_TAG}** ❌"
             error "TgHelperBot deployment error"
           }
         }
@@ -108,7 +108,7 @@ Job: ${env.JOB_URL}```"""
     stage("Telegram notification on success") {
       steps {
         script {
-          telegramSend "✅ Successfully finished job with tag: **${env.BUILD_TAG}**"
+          telegramSend "✅ Successfully finished job with tag: **${env.BUILD_TAG}** ✅"
         }
       }
     }
