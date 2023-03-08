@@ -1,11 +1,11 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from vars import main_buttons
 from CloudFlare import CloudFlare
 import uuid
 from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, DelRec, AddRec
 from functools import lru_cache
 
+from main import main_buttons
 from credentials import EMAIL, CF_API_TOKEN
 
 cf = CloudFlare(email=EMAIL, key=CF_API_TOKEN)
@@ -13,7 +13,7 @@ cf = CloudFlare(email=EMAIL, key=CF_API_TOKEN)
 
 class Buttons:
     @staticmethod
-    @lru_cache(maxsize=100)
+    @lru_cache(maxsize=50)
     def main_menu() -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for button in main_buttons:
@@ -24,9 +24,11 @@ class Buttons:
     def list_zones() -> InlineKeyboardMarkup:
         zones_list = cf.zones.get()
         builder = InlineKeyboardBuilder()
+
         for zone in zones_list:
             callback_data = ListRecords(zone_id=zone['id'])
             builder.button(text=zone['name'], callback_data=callback_data)
+
         builder.row(InlineKeyboardButton(text='Main Menu', callback_data="menu"))
         return builder.as_markup()
 

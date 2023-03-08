@@ -47,7 +47,7 @@ Job: ${env.JOB_URL}```"""
             sh("sed -i 's/gmail/$EMAIL/' credentials.py")
           }
           withCredentials([string(credentialsId: 'tghelperbot_whitelist', variable: 'WHITELIST')]) {
-            sh("sed -i 's/WHITELIST/$WHITELIST/' vars.py")
+            sh("sed -i 's/WHITELIST/$WHITELIST/' credentials.py")
           }
         }
       }

@@ -2,21 +2,25 @@ from CloudFlare import CloudFlare
 import logging
 from logging import INFO
 import asyncio
+import multiprocessing
 
 from aiogram import Bot, Dispatcher, Router
 from aiogram.filters import Text, Command
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 
-
 # Local imports
 from Middleware import WhitelistMiddleware
 from credentials import *
 from replies import record_reply, main_reply, sure_reply
-from functions import *
 from Buttons import Buttons
 from CallbackFactory import ListRecords, GetRecInfo, DelRecConfirm, memory, DelRec, AddRec
 from States import DNSForm
+
+# Tuples
+full_fields = ('id', 'name', 'type', 'content', 'proxied', 'proxiable')
+brief_fields = ('id', 'name', 'type')
+main_buttons = ('DNS', 'WireGuard')
 
 # Configure logging
 logging.basicConfig(level=INFO)
@@ -67,10 +71,11 @@ async def list_domains(callback: CallbackQuery) -> None:
 async def list_recs_cb_handler(callback: CallbackQuery, callback_data: ListRecords) -> None:
     zone_id = callback_data.zone_id
 
-    parsed_output = await get_records(cf=cf, zone_id=zone_id, zone=True)
+    records = [{field: record[field] for field in brief_fields}
+               for record in cf.zones.dns_records.get(zone_id)]
 
     await callback.message.edit_text('Click to configure record:',
-                                     reply_markup=Buttons.list_recs(parsed_output, zone_id))
+                                     reply_markup=Buttons.list_recs(records, zone_id))
     await callback.answer()
 
 
@@ -81,9 +86,19 @@ async def get_rec_info_cb_handler(callback: CallbackQuery, callback_data: GetRec
     zone_id = data['zone_id']
     record_id = data['record_id']
 
-    parsed_output = await get_records(cf=cf, zone_id=zone_id, record_id=record_id, zone=False)
+    #record = [{field: record[field] for field in full_fields}
+    #          for record in cf.zones.dns_records.get(zone_id)
+    #          if record['id'] == record_id][0]
 
-    await callback.message.edit_text(text=record_reply(parsed_output),
+    records = cf.zones.dns_records.get(zone_id)
+    record = {}
+    for r in records:
+        #nonlocal record
+        if r['id'] == record_id:
+            record = r
+            break
+
+    await callback.message.edit_text(text=record_reply(record),
                                      reply_markup=Buttons.get_rec_info(zone_id=zone_id, record_id=record_id))
     await callback.answer()
 
@@ -116,7 +131,8 @@ async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRec
     zone_id = callback_data.zone_id
     await state.set_state(DNSForm.rec_name)
     await state.set_data({'zone_id': zone_id})
-    await callback.message.edit_text(text="Enter record you'd like to add", reply_markup=Buttons.return_to_recs(zone_id))
+    await callback.message.edit_text(text="Enter record you'd like to add",
+                                     reply_markup=Buttons.return_to_recs(zone_id))
 
 
 @dns_add_rec_form.message(DNSForm.rec_name)
