@@ -1,4 +1,4 @@
-FROM pypy:3.9-slim-buster
+FROM pypy:3.10-slim-buster
 ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app/
