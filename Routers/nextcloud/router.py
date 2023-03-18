@@ -6,7 +6,6 @@ from aiogram import F
 # Local imports
 # from Buttons import Buttons
 # from vars.credentials import EMAIL, CF_API_TOKEN
-# from vars.replies import record_reply, sure_reply
 
 nextcloud_router = Router()
 

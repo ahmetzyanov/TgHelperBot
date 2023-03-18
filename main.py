@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.filters import Text, Command
 from aiogram.types import CallbackQuery, Message
 # Local imports
-from Buttons import Buttons
+from Buttons.DNS import DNS
 from vars.replies import main_reply
 from Routers.dns.router import dns_router
 from WhitelistMiddleware import WhitelistMiddleware
@@ -46,7 +46,7 @@ async def wg(callback: CallbackQuery) -> None:
     await bot.delete_message(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id)
-    await callback.message.edit_text('Заглушка', reply_markup=Buttons.main_menu())
+    await callback.message.edit_text('Заглушка', reply_markup=DNS.main_menu())
 
 
 '''
@@ -56,13 +56,13 @@ async def wg(callback: CallbackQuery) -> None:
 
 @dp.message(Command(commands=['start', 'help', 'menu', 'home']))
 async def send_welcome(message: Message) -> None:
-    await message.answer(main_reply, reply_markup=Buttons.main_menu())
+    await message.answer(main_reply, reply_markup=DNS.main_menu())
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 @dp.callback_query(Text(startswith='menu'))
 async def menu_callback(callback: CallbackQuery) -> None:
-    await callback.message.edit_text(main_reply, reply_markup=Buttons.main_menu())
+    await callback.message.edit_text(main_reply, reply_markup=DNS.main_menu())
     await callback.answer()
 
 

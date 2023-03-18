@@ -4,13 +4,13 @@ from CloudFlare import CloudFlare
 from aiogram.fsm.context import FSMContext
 
 from CallbackFactory.DNS.AddRec import AddRec
-from CallbackFactory.Data.Data import memory
+from CallbackFactory.Data.DNS import memory
 
 
 # Local imports
 from States.DNS.AddRecStates import DNSForm
 
-from Buttons import Buttons
+from Buttons.DNS.DNS import return_to_recs, select_rec_type
 from vars.credentials import EMAIL, CF_API_TOKEN, TG_API_TOKEN
 
 dns_add_rec_form = Router()
@@ -26,7 +26,7 @@ async def add_rec_name_handler(message: Message, state: FSMContext) -> None:
     data['name'] = message.text
     zone_id = data.get('zone_id')
     await state.set_data(data)
-    await message.answer(f'Write record content:', reply_markup=Buttons.return_to_recs(zone_id))
+    await message.answer(f'Write record content:', reply_markup=return_to_recs(zone_id))
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
@@ -36,7 +36,7 @@ async def add_rec_content_handler(message: Message, state: FSMContext) -> None:
     data['content'] = message.text
     await message.answer(f'''Verify parameters you wrote and select record type.
 Name: {data['name']}
-Content: {data['content']}''', reply_markup=Buttons.select_rec_type(data=data))
+Content: {data['content']}''', reply_markup=select_rec_type(data=data))
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
@@ -48,7 +48,7 @@ async def add_rec_type_handler(callback: CallbackQuery, callback_data: AddRec) -
 
     try:
         cf.zones.dns_records.post(zone_id, data=data.data)
-        await callback.answer(text='record added!', reply_markup=Buttons.return_to_recs(zone_id=zone_id), show_alert=True)
+        await callback.answer(text='record added!', reply_markup=return_to_recs(zone_id=zone_id), show_alert=True)
     except Exception as exc:
-        await callback.answer(text=str(exc), reply_markup=Buttons.return_to_recs(zone_id=zone_id), show_alert=True)
+        await callback.answer(text=str(exc), reply_markup=return_to_recs(zone_id=zone_id), show_alert=True)
 

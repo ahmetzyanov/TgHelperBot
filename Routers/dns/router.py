@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 
 # Local imports
 from States.DNS.AddRecStates import DNSForm
-from Buttons import Buttons
+from Buttons.DNS import DNS
 from CloudFlare import CloudFlare
 from vars.credentials import EMAIL, CF_API_TOKEN
 from vars.replies import record_reply, sure_reply
@@ -14,7 +14,7 @@ from CallbackFactory.DNS.AddRec import AddRecForm
 from CallbackFactory.DNS.DelRec import DelRecConfirm, DelRec
 from CallbackFactory.DNS.Info import GetRecInfo, ListRecords
 
-from CallbackFactory.Data.Data import memory, GetRecInfoData, DelRecData, DelRecConfirmData
+from CallbackFactory.Data.DNS import memory, GetRecInfoData, DelRecData, DelRecConfirmData
 
 
 dns_router = Router()
@@ -33,7 +33,7 @@ brief_fields = ('id', 'name', 'type')
 
 @dns_router.callback_query(Text(startswith="DNS"))
 async def list_domains(callback: CallbackQuery) -> None:
-    await callback.message.edit_text('Your zones are:', reply_markup=Buttons.list_zones())
+    await callback.message.edit_text('Your zones are:', reply_markup=DNS.list_zones())
 
 
 @dns_router.callback_query(ListRecords.filter())
@@ -44,7 +44,7 @@ async def list_recs_cb_handler(callback: CallbackQuery, callback_data: ListRecor
                for record in cf.zones.dns_records.get(zone_id)]
 
     await callback.message.edit_text('Click to configure record:',
-                                     reply_markup=Buttons.list_recs(records, zone_id))
+                                     reply_markup=DNS.list_recs(records, zone_id))
     await callback.answer()
 
 
@@ -63,7 +63,7 @@ async def get_rec_info_cb_handler(callback: CallbackQuery, callback_data: GetRec
             break
 
     await callback.message.edit_text(text=record_reply(record),
-                                     reply_markup=Buttons.get_rec_info(zone_id=zone_id, record_id=record_id))
+                                     reply_markup=DNS.get_rec_info(zone_id=zone_id, record_id=record_id))
     await callback.answer()
 
 
@@ -74,7 +74,7 @@ async def del_rec_conf_cb_handler(callback: CallbackQuery, callback_data: DelRec
     zone_id = data.zone_id
     record_id = data.record_id
 
-    await callback.message.edit_text(text=sure_reply, reply_markup=Buttons.rec_del_conf(zone_id, record_id))
+    await callback.message.edit_text(text=sure_reply, reply_markup=DNS.rec_del_conf(zone_id, record_id))
     await callback.answer()
 
 
@@ -95,5 +95,4 @@ async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRec
     zone_id = callback_data.zone_id
     await state.set_state(DNSForm.rec_name)
     await state.set_data({'zone_id': zone_id})
-    await callback.message.edit_text(text="Enter record you'd like to add",
-                                               reply_markup=Buttons.return_to_recs(zone_id))
+    await callback.message.edit_text(text="Enter record you'd like to add", reply_markup=DNS.return_to_recs(zone_id))
