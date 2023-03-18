@@ -9,7 +9,12 @@ from Buttons import Buttons
 from CloudFlare import CloudFlare
 from vars.credentials import EMAIL, CF_API_TOKEN
 from vars.replies import record_reply, sure_reply
-from CallbackFactory import ListRecords, GetRecInfo, DelRecConfirm, memory, DelRec, AddRecForm
+
+from CallbackFactory.DNS.AddRec import AddRecForm
+from CallbackFactory.DNS.DelRec import DelRecConfirm, DelRec
+from CallbackFactory.DNS.Info import GetRecInfo, ListRecords
+
+from CallbackFactory.Data.Data import memory, GetRecInfoData, DelRecData, DelRecConfirmData
 
 
 dns_router = Router()
@@ -20,7 +25,6 @@ cf = CloudFlare(email=EMAIL, key=CF_API_TOKEN)
 # Tuples
 full_fields = ('id', 'name', 'type', 'content', 'proxied', 'proxiable')
 brief_fields = ('id', 'name', 'type')
-
 
 '''
     DNS handlers
@@ -47,9 +51,9 @@ async def list_recs_cb_handler(callback: CallbackQuery, callback_data: ListRecor
 @dns_router.callback_query(GetRecInfo.filter())
 async def get_rec_info_cb_handler(callback: CallbackQuery, callback_data: GetRecInfo) -> None:
     mem_id = callback_data.id
-    data = memory.get(mem_id)
-    zone_id = data.get('zone_id')
-    record_id = data.get('record_id')
+    data: GetRecInfoData = memory.get(mem_id)
+    zone_id = data.zone_id
+    record_id = data.record_id
 
     records = cf.zones.dns_records.get(zone_id)
     record = {}
@@ -66,9 +70,9 @@ async def get_rec_info_cb_handler(callback: CallbackQuery, callback_data: GetRec
 @dns_router.callback_query(DelRecConfirm.filter())
 async def del_rec_conf_cb_handler(callback: CallbackQuery, callback_data: DelRecConfirm) -> None:
     mem_id = callback_data.id
-    data = memory.get(mem_id)
-    zone_id = data.get('zone_id')
-    record_id = data.get('record_id')
+    data: DelRecConfirmData = memory.get(mem_id)
+    zone_id = data.zone_id
+    record_id = data.record_id
 
     await callback.message.edit_text(text=sure_reply, reply_markup=Buttons.rec_del_conf(zone_id, record_id))
     await callback.answer()
@@ -77,9 +81,9 @@ async def del_rec_conf_cb_handler(callback: CallbackQuery, callback_data: DelRec
 @dns_router.callback_query(DelRec.filter())
 async def del_rec_cb_handler(callback: CallbackQuery, callback_data: DelRec) -> None:
     mem_id = callback_data.id
-    data = memory.get(mem_id)
-    zone_id = data.get('zone_id')
-    record_id = data.get('record_id')
+    data: DelRecData = memory.get(mem_id)
+    zone_id = data.zone_id
+    record_id = data.record_id
 
     cf.zones.dns_records.delete(zone_id, record_id)
     await callback.answer(text=f'Record successfully deleted!', show_alert=True)
@@ -91,7 +95,5 @@ async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRec
     zone_id = callback_data.zone_id
     await state.set_state(DNSForm.rec_name)
     await state.set_data({'zone_id': zone_id})
-    message = await callback.message.edit_text(text="Enter record you'd like to add",
-                                     reply_markup=Buttons.return_to_recs(zone_id))
-    print(message.message_id)
-
+    await callback.message.edit_text(text="Enter record you'd like to add",
+                                               reply_markup=Buttons.return_to_recs(zone_id))

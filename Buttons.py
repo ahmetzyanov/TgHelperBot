@@ -5,7 +5,12 @@ import uuid
 from functools import lru_cache
 # Local imports
 from vars.credentials import EMAIL, CF_API_TOKEN
-from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, DelRec, AddRecForm, AddRec
+
+from CallbackFactory.DNS.AddRec import AddRecForm, AddRec
+from CallbackFactory.DNS.DelRec import DelRecConfirm, DelRec
+from CallbackFactory.DNS.Info import GetRecInfo, ListRecords
+
+from CallbackFactory.Data.Data import write_id, GetRecInfoData, AddRecData, DelRecData, DelRecConfirmData
 
 # Tuples
 main_buttons = ('DNS', 'WireGuard')
@@ -39,8 +44,9 @@ class Buttons:
     def list_recs(records, zone_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for record in records:
-            uniq_id = str(uuid.uuid4())
-            write_id(key=uniq_id, zone_id=zone_id, record_id=record['id'])
+            uniq_id = uuid.uuid4()
+            data = GetRecInfoData(zone_id=zone_id, record_id=record['id'])
+            write_id(key=uniq_id, data=data)
             callback_data = GetRecInfo(id=uniq_id)
             builder.button(text=f"{record['name']} {record['type']}", callback_data=callback_data)
         builder.adjust(1)
@@ -55,8 +61,9 @@ class Buttons:
     @staticmethod
     def get_rec_info(zone_id, record_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
-        uniq_id = str(uuid.uuid4())
-        write_id(key=uniq_id, zone_id=zone_id, record_id=record_id)
+        uniq_id = uuid.uuid4()
+        data = DelRecConfirmData(zone_id=zone_id, record_id=record_id)
+        write_id(key=uniq_id, data=data)
         delete_rec_callback_data = DelRecConfirm(id=uniq_id).pack()
         back_callback_data = ListRecords(zone_id=zone_id).pack()
         builder.row(InlineKeyboardButton(text='Delete record', callback_data=delete_rec_callback_data),
@@ -73,8 +80,9 @@ class Buttons:
     @staticmethod
     def rec_del_conf(zone_id, record_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
-        uniq_id = str(uuid.uuid4())
-        write_id(key=uniq_id, zone_id=zone_id, record_id=record_id)
+        uniq_id = uuid.uuid4()
+        data = DelRecData(zone_id=zone_id, record_id=record_id)
+        write_id(key=uniq_id, data=data)
         del_rec_callback_data = DelRec(id=uniq_id).pack()
         canc_callback_data = ListRecords(zone_id=zone_id).pack()
         builder.row(InlineKeyboardButton(text='Delete record', callback_data=del_rec_callback_data),
@@ -87,10 +95,11 @@ class Buttons:
         zone_id = data.pop('zone_id')
 
         for rt in rec_types:
-            uniq_id = str(uuid.uuid4())
+            uniq_id = uuid.uuid4()
             rec_data = data.copy()
             rec_data['type'] = rt
-            write_id(key=uniq_id, zone_id=zone_id, data=rec_data)
+            data = AddRecData(zone_id=zone_id, data=rec_data)
+            write_id(key=uniq_id, data=data)
             callback_data = AddRec(id=uniq_id).pack()
             builder.button(text=f"{rt}", callback_data=callback_data)
         builder.adjust(1)
