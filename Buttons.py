@@ -88,7 +88,7 @@ class Buttons:
 
         for rt in rec_types:
             uniq_id = str(uuid.uuid4())
-            rec_data = data[:]
+            rec_data = data.copy()
             rec_data['type'] = rt
             print(rt)
             print(rec_data)
