@@ -30,7 +30,7 @@ async def add_rec_name_handler(message: Message, state: FSMContext) -> None:
 async def add_rec_content_handler(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     data['content'] = message.text
-    await message.edit_text(f'''Verify parameters you wrote and select record type.
+    await message.answer(f'''Verify parameters you wrote and select record type.
 Name: {data['name']}
 Content: {data['content']}''', reply_markup=Buttons.select_rec_type(data=data))
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
