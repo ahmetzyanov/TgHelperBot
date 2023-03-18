@@ -30,7 +30,7 @@ async def add_rec_content_handler(message: Message, state: FSMContext) -> None:
     zone_id = data.get('zone_id')
     await message.answer(f'''Verify parameters you wrote and select record type.
 Name: {data['name']}
-Content: {data['content']}''', reply_markup=Buttons.select_rec_type(zone_id=zone_id, data=data))
+Content: {data['content']}''', reply_markup=Buttons.select_rec_type(data=data))
 
 
 @dns_add_rec_form.callback_query(AddRec.filter())

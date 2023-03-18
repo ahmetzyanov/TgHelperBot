@@ -82,8 +82,9 @@ class Buttons:
         return builder.as_markup()
 
     @staticmethod
-    def select_rec_type(zone_id, data) -> InlineKeyboardMarkup:
+    def select_rec_type(data) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
+        zone_id = data.pop('zone_id')
         for rt in rec_types:
             uniq_id = str(uuid.uuid4())
             data['type'] = rt
