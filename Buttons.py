@@ -88,9 +88,11 @@ class Buttons:
 
         for rt in rec_types:
             uniq_id = str(uuid.uuid4())
-            data['type'] = rt
+            rec_data = data[:]
+            rec_data['type'] = rt
             print(rt)
-            write_id(key=uniq_id, zone_id=zone_id, data=data)
+            print(rec_data)
+            write_id(key=uniq_id, zone_id=zone_id, data=rec_data)
             callback_data = AddRec(id=uniq_id).pack()
             builder.button(text=f"{rt}", callback_data=callback_data)
         builder.adjust(1)
