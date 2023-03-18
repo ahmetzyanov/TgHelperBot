@@ -86,7 +86,7 @@ class Buttons:
     def select_rec_type(zone_id) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for rt in rec_types:
-            callback_data = ListRecords(zone_id).pack()
+            callback_data = ListRecords(zone_id=zone_id).pack()
             builder.button(text=f"{rt}", callback_data=callback_data)
         builder.adjust(1)
 
