@@ -1,6 +1,6 @@
 from aiogram import Router
 
-from aiogram.types import CallbackQuery
+from aiogram.types import Message
 from aiogram import F
 
 # Local imports
@@ -10,12 +10,11 @@ from aiogram import F
 
 nextcloud_router = Router()
 
-
 '''
     Pic
 '''
 
 
 @nextcloud_router.message(F.photo)
-async def upload_media(callback: CallbackQuery) -> None:
-    await callback.message.answer('Media uploaded')
+async def upload_media(message: Message) -> None:
+    await message.answer(text='Media uploaded')
