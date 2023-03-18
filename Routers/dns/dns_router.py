@@ -91,5 +91,7 @@ async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRec
     zone_id = callback_data.zone_id
     await state.set_state(DNSForm.rec_name)
     await state.set_data({'zone_id': zone_id})
-    await callback.message.edit_text(text="Enter record you'd like to add",
+    message = await callback.message.edit_text(text="Enter record you'd like to add",
                                      reply_markup=Buttons.return_to_recs(zone_id))
+    print(message.message_id)
+

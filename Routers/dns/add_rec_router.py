@@ -22,7 +22,8 @@ async def add_rec_name_handler(message: Message, state: FSMContext) -> None:
     data['name'] = message.text
     zone_id = data.get('zone_id')
     await state.set_data(data)
-    await message.edit_text(f'Write record content:', reply_markup=Buttons.return_to_recs(zone_id))
+    print(message.message_id)
+    await message.answer(f'Write record content:', reply_markup=Buttons.return_to_recs(zone_id))
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
