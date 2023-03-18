@@ -95,8 +95,8 @@ Job: ${env.JOB_URL}```"""
             withKubeConfig([
               credentialsId: '9d745e97-be47-495b-ab80-232de01122e3',
               serverUrl: "https://${env.KUBERNETES_SERVICE_HOST}:443"]) {
-                sh("kubectl rollout status deployment.apps/tghelperbot-depl -n jenkins")
-                sh("kubectl wait --for=condition=available --timeout=60s deployment.apps/tghelperbot-depl")
+                sh("kubectl rollout status deployment.apps/tghelperbot-depl -n tghelperbot")
+                sh("kubectl wait -n tghelperbot --for=condition=available --timeout=60s deployment.apps/tghelperbot-depl")
             }
           } catch (Exception e) {
             telegramSend "❌ TgHelperBot deployment error ❌ ```Job tag: ${env.BUILD_TAG}```"
