@@ -85,9 +85,11 @@ class Buttons:
     def select_rec_type(data) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         zone_id = data.pop('zone_id')
+
         for rt in rec_types:
             uniq_id = str(uuid.uuid4())
             data['type'] = rt
+            print(rt)
             write_id(key=uniq_id, zone_id=zone_id, data=data)
             callback_data = AddRec(id=uniq_id).pack()
             builder.button(text=f"{rt}", callback_data=callback_data)

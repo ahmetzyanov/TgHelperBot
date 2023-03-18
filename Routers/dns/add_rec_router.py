@@ -37,6 +37,7 @@ Content: {data['content']}''', reply_markup=Buttons.select_rec_type(data=data))
 async def add_rec_type_handler(callback: CallbackQuery, callback_data: AddRec) -> None:
     mem_id = callback_data.id
     data = memory.get(mem_id)
+    print(memory)
     print(data)
     zone_id = data['zone_id']
 
