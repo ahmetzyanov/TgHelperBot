@@ -4,7 +4,7 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 
 # Local imports
-from States.DNSStates import DNSForm
+from States.DNS.AddRecStates import DNSForm
 from Buttons import Buttons
 from CloudFlare import CloudFlare
 from vars.credentials import EMAIL, CF_API_TOKEN

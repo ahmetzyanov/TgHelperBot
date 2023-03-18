@@ -8,7 +8,7 @@ from CallbackFactory.Data.Data import memory
 
 
 # Local imports
-from States.DNSStates import DNSForm
+from States.DNS.AddRecStates import DNSForm
 
 from Buttons import Buttons
 from vars.credentials import EMAIL, CF_API_TOKEN, TG_API_TOKEN
