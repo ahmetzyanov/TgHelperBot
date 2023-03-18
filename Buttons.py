@@ -10,13 +10,14 @@ from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, De
 
 # Tuples
 main_buttons = ('DNS', 'WireGuard')
+rec_types = ('A', 'AAAA', 'CNAME', 'PTR')
 
 cf = CloudFlare(email=EMAIL, key=CF_API_TOKEN)
 
 
 class Buttons:
     @staticmethod
-    @lru_cache(maxsize=50)
+    @lru_cache(maxsize=2)
     def main_menu() -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for button in main_buttons:
@@ -80,3 +81,17 @@ class Buttons:
         builder.row(InlineKeyboardButton(text='Delete record', callback_data=del_rec_callback_data),
                     InlineKeyboardButton(text='Cancel', callback_data=canc_callback_data))
         return builder.as_markup()
+
+    @staticmethod
+    def select_rec_type(zone_id) -> InlineKeyboardMarkup:
+        builder = InlineKeyboardBuilder()
+        for rt in rec_types:
+            callback_data = ListRecords(zone_id).pack()
+            builder.button(text=f"{rt}", callback_data=callback_data)
+        builder.adjust(1)
+
+        canc_callback_data = ListRecords(zone_id=zone_id).pack()
+        builder.row(InlineKeyboardButton(text='Cancel', callback_data=canc_callback_data))
+
+        return builder.as_markup()
+
