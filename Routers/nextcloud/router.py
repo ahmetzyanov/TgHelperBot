@@ -16,6 +16,6 @@ nextcloud_router = Router()
 '''
 
 
-@nextcloud_router.callback_query(F.photo)
+@nextcloud_router.message(F.photo)
 async def upload_media(callback: CallbackQuery) -> None:
     await callback.message.answer('Media uploaded')
