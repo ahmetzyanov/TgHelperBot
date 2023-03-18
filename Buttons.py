@@ -5,7 +5,7 @@ import uuid
 from functools import lru_cache
 # Local imports
 from vars.credentials import EMAIL, CF_API_TOKEN
-from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, DelRec, AddRecForm
+from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, DelRec, AddRecForm, AddRec
 
 # Tuples
 main_buttons = ('DNS', 'WireGuard')
@@ -88,7 +88,7 @@ class Buttons:
             uniq_id = str(uuid.uuid4())
             data['type'] = rt
             write_id(key=uniq_id, zone_id=zone_id, data=data)
-            callback_data = ListRecords(zone_id=zone_id).pack()
+            callback_data = AddRec(id=uniq_id).pack()
             builder.button(text=f"{rt}", callback_data=callback_data)
         builder.adjust(1)
 
