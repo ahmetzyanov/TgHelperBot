@@ -17,8 +17,12 @@ class DelRec(CallbackData, prefix="delrec"):
     id: str
 
 
-class AddRec(CallbackData, prefix="addrec"):
+class AddRecForm(CallbackData, prefix="addrecform"):
     zone_id: str
+
+
+class AddRec(CallbackData, prefix="addrec"):
+    id: str
 
 
 memory = {}

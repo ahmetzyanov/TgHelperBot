@@ -5,8 +5,7 @@ import uuid
 from functools import lru_cache
 # Local imports
 from vars.credentials import EMAIL, CF_API_TOKEN
-from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, DelRec, AddRec
-
+from CallbackFactory import DelRecConfirm, GetRecInfo, ListRecords, write_id, DelRec, AddRecForm
 
 # Tuples
 main_buttons = ('DNS', 'WireGuard')
@@ -45,7 +44,7 @@ class Buttons:
             callback_data = GetRecInfo(id=uniq_id)
             builder.button(text=f"{record['name']} {record['type']}", callback_data=callback_data)
         builder.adjust(1)
-        add_rec_cb_data = AddRec(zone_id=zone_id)
+        add_rec_cb_data = AddRecForm(zone_id=zone_id)
         builder.row(InlineKeyboardButton(text='Add record', callback_data=add_rec_cb_data.pack()))
 
         builder.row(InlineKeyboardButton(text='Main Menu', callback_data="menu"),
@@ -83,9 +82,12 @@ class Buttons:
         return builder.as_markup()
 
     @staticmethod
-    def select_rec_type(zone_id) -> InlineKeyboardMarkup:
+    def select_rec_type(zone_id, data) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         for rt in rec_types:
+            uniq_id = str(uuid.uuid4())
+            data['type'] = rt
+            write_id(key=uniq_id, zone_id=zone_id, data=data)
             callback_data = ListRecords(zone_id=zone_id).pack()
             builder.button(text=f"{rt}", callback_data=callback_data)
         builder.adjust(1)
@@ -94,4 +96,3 @@ class Buttons:
         builder.row(InlineKeyboardButton(text='Cancel', callback_data=canc_callback_data))
 
         return builder.as_markup()
-

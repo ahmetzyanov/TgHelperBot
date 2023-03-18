@@ -9,7 +9,7 @@ from Buttons import Buttons
 from CloudFlare import CloudFlare
 from vars.credentials import EMAIL, CF_API_TOKEN
 from vars.replies import record_reply, sure_reply
-from CallbackFactory import ListRecords, GetRecInfo, DelRecConfirm, memory, DelRec, AddRec
+from CallbackFactory import ListRecords, GetRecInfo, DelRecConfirm, memory, DelRec, AddRecForm
 
 
 dns_router = Router()
@@ -86,8 +86,8 @@ async def del_rec_cb_handler(callback: CallbackQuery, callback_data: DelRec) -> 
     await list_recs_cb_handler(callback=callback, callback_data=ListRecords(zone_id=zone_id))
 
 
-@dns_router.callback_query(AddRec.filter())
-async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRec, state: FSMContext) -> None:
+@dns_router.callback_query(AddRecForm.filter())
+async def add_rec_conf_cb_handler(callback: CallbackQuery, callback_data: AddRecForm, state: FSMContext) -> None:
     zone_id = callback_data.zone_id
     await state.set_state(DNSForm.rec_name)
     await state.set_data({'zone_id': zone_id})

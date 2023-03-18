@@ -26,7 +26,7 @@ spec:
             command:
               - echo
               - healthy
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
           periodSeconds: 5
       imagePullSecrets:
       - name: gitlab-cred

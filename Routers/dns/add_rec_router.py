@@ -1,12 +1,13 @@
 from aiogram import Router
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 from CloudFlare import CloudFlare
 from aiogram.fsm.context import FSMContext
+
+from CallbackFactory import AddRec, memory
 # Local imports
 from States.DNSStates import DNSForm
 from Buttons import Buttons
 from vars.credentials import EMAIL, CF_API_TOKEN
-
 
 dns_add_rec_form = Router()
 cf = CloudFlare(email=EMAIL, key=CF_API_TOKEN)
@@ -29,19 +30,20 @@ async def add_rec_content_handler(message: Message, state: FSMContext) -> None:
     zone_id = data.get('zone_id')
     await message.answer(f'''Verify parameters you wrote and select record type.
 Name: {data['name']}
-Content: {data['content']}
-''', reply_markup=Buttons.select_rec_type(zone_id))
+Content: {data['content']}''', reply_markup=Buttons.select_rec_type(zone_id=zone_id, data=data))
 
 
-# @dns_add_rec_form.message(DNSForm.rec_type)
-# async def add_rec_type_handler(message: Message, state: FSMContext) -> None:
-#     data = await state.get_data()
-#     data['type'] = message.text
-#     rec_name = data['name']
-#     zone_id = data.pop('zone_id')
-#     try:
-#         cf.zones.dns_records.post(zone_id, data=data)
-#         await message.answer(f'Record "{rec_name}" successfully added!')
-#     except Exception as exc:
-#         await message.answer(f'Error: "{exc}"')
-#     await state.clear()
+@dns_add_rec_form.callback_query(AddRec.filter())
+async def add_rec_type_handler(callback: CallbackQuery, callback_data: AddRec) -> None:
+    mem_id = callback_data.id
+    data = memory.get(mem_id)
+    print(data)
+    zone_id = data['zone_id']
+
+    try:
+        cf.zones.dns_records.post(zone_id, data=data['data'])
+        await callback.message.answer(text='record added!', reply_markup=Buttons.return_to_recs(zone_id=zone_id))
+    except Exception as exc:
+        await callback.message.answer(text=str(exc), reply_markup=Buttons.return_to_recs(zone_id=zone_id))
+    await callback.answer()
+
